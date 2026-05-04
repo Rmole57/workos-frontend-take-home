@@ -1,9 +1,5 @@
-import { Text } from '@radix-ui/themes'
+import { UsersTable } from '../components/users/UsersTable'
 
 export function UsersPage() {
-  return (
-    <Text as="p" color="gray">
-      Users table coming next.
-    </Text>
-  )
+  return <UsersTable />
 }
