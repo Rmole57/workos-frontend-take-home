@@ -32,7 +32,9 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
 	const defaultRoleId = useMemo(() => {
 		if (!rolesById) return "";
 		for (const role of rolesById.values()) {
-			if (role.isDefault) return role.id;
+			if (role.isDefault) {
+				return role.id;
+			}
 		}
 		return "";
 	}, [rolesById]);

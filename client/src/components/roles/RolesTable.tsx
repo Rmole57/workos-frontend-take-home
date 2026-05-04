@@ -1,5 +1,5 @@
 import { Cross1Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Badge, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
+import { Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
@@ -44,10 +44,9 @@ export function RolesTable() {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const columns = useMemo<ColumnDef<Role, any>[]>(
 		() => [
-			column.display({
-				id: "name",
+			column.accessor("name", {
 				header: "Name",
-				cell: ({ row }) => <RoleNameCell role={row.original} />,
+				cell: ({ getValue }) => <Text>{getValue()}</Text>,
 			}),
 			column.accessor("description", {
 				header: "Description",
@@ -112,15 +111,3 @@ export function RolesTable() {
 	);
 }
 
-function RoleNameCell({ role }: { role: Role }) {
-	return (
-		<Flex align="center" gap="2">
-			<Text>{role.name}</Text>
-			{role.isDefault && (
-				<Badge color="iris" variant="soft" radius="full" size="1">
-					Default
-				</Badge>
-			)}
-		</Flex>
-	);
-}

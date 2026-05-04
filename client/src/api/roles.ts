@@ -26,6 +26,7 @@ export async function listAllRoles(signal?: AbortSignal): Promise<Role[]> {
 export type UpdateRolePatch = {
 	name?: string;
 	description?: string;
+	isDefault?: boolean;
 };
 
 export const updateRole = (id: string, patch: UpdateRolePatch) =>
