@@ -23,7 +23,10 @@ export async function listAllRoles(signal?: AbortSignal): Promise<Role[]> {
 	return all;
 }
 
-export const updateRole = (
-	id: string,
-	patch: { name?: string; description?: string },
-) => apiFetch<Role>(`/roles/${id}`, { method: "PATCH", body: patch });
+export type UpdateRolePatch = {
+	name?: string;
+	description?: string;
+};
+
+export const updateRole = (id: string, patch: UpdateRolePatch) =>
+	apiFetch<Role>(`/roles/${id}`, { method: "PATCH", body: patch });

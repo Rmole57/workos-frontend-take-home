@@ -1,13 +1,18 @@
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { DropdownMenu, Flex, IconButton } from "@radix-ui/themes";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons"
+import { DropdownMenu, Flex, IconButton } from "@radix-ui/themes"
+import { useState } from "react"
 
-import type { Role } from "../../api/types";
+import type { Role } from "../../api/types"
+
+import { EditRoleDialog } from "./EditRoleDialog"
 
 type RoleRowActionsProps = {
-	role: Role;
-};
+	role: Role
+}
 
 export function RoleRowActions({ role }: RoleRowActionsProps) {
+	const [editOpen, setEditOpen] = useState(false)
+
 	return (
 		<Flex justify="end">
 			<DropdownMenu.Root>
@@ -23,9 +28,16 @@ export function RoleRowActions({ role }: RoleRowActionsProps) {
 					</IconButton>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end" style={{ minWidth: "143px" }}>
-					<DropdownMenu.Item disabled>Rename role</DropdownMenu.Item>
+					<DropdownMenu.Item onSelect={() => setEditOpen(true)}>
+						Edit role
+					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
+			<EditRoleDialog
+				role={role}
+				open={editOpen}
+				onOpenChange={setEditOpen}
+			/>
 		</Flex>
-	);
+	)
 }
