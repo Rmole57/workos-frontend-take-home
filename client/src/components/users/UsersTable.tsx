@@ -1,8 +1,4 @@
-import {
-	Cross1Icon,
-	DotsHorizontalIcon,
-	MagnifyingGlassIcon,
-} from "@radix-ui/react-icons";
+import { Cross1Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Avatar, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
@@ -14,6 +10,8 @@ import { useUsersQuery } from "../../hooks/useUsers";
 import { formatJoined, initialsOf } from "../../lib/format";
 import { useDebouncedSearch } from "../../lib/useDebouncedSearch";
 import { DataTable } from "../data-table/DataTable";
+
+import { UserRowActions } from "./UserRowActions";
 
 const parsePage = (raw: string | null) => {
 	const parsed = Number(raw);
@@ -68,7 +66,7 @@ export function UsersTable() {
 				id: "actions",
 				header: "",
 				meta: { headerProps: { "aria-label": "Row actions" } },
-				cell: ({ row }) => <UserRowActionsButton user={row.original} />,
+				cell: ({ row }) => <UserRowActions user={row.original} />,
 			}),
 		],
 		[rolesById],
@@ -128,22 +126,6 @@ function UserCell({ user }: { user: User }) {
 			<Text>
 				{user.first} {user.last}
 			</Text>
-		</Flex>
-	);
-}
-
-function UserRowActionsButton({ user }: { user: User }) {
-	return (
-		<Flex justify="end">
-			<IconButton
-				aria-label={`Open row actions for ${user.first} ${user.last}`}
-				size="1"
-				variant="ghost"
-				color="gray"
-				disabled
-			>
-				<DotsHorizontalIcon />
-			</IconButton>
 		</Flex>
 	);
 }
