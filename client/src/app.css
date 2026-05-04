@@ -4,6 +4,12 @@ body,
 	height: 100%;
 }
 
+.radix-themes,
+.radix-themes:where([data-accent-color="iris"]) {
+	--accent-9: #6565ec;
+	--accent-indicator: #6565ec;
+}
+
 body {
 	margin: 0;
 	font-synthesis: none;

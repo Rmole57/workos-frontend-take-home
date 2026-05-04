@@ -18,7 +18,7 @@ createRoot(root).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<BrowserRouter>
-				<Theme accentColor="indigo" radius="medium" appearance="inherit">
+				<Theme accentColor="iris" radius="medium" appearance="inherit">
 					<App />
 					<Toaster richColors position="bottom-right" closeButton />
 					<ReactQueryDevtools
