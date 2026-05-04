@@ -5,12 +5,14 @@ import { useState } from "react";
 import type { User } from "../../api/types";
 
 import { DeleteUserDialog } from "./DeleteUserDialog";
+import { EditUserDialog } from "./EditUserDialog";
 
 type UserRowActionsProps = {
 	user: User;
 };
 
 export function UserRowActions({ user }: UserRowActionsProps) {
+	const [editOpen, setEditOpen] = useState(false);
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	const fullName = `${user.first} ${user.last}`;
@@ -30,12 +32,19 @@ export function UserRowActions({ user }: UserRowActionsProps) {
 					</IconButton>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end" style={{ minWidth: "143px" }}>
-					<DropdownMenu.Item disabled>Edit user</DropdownMenu.Item>
+					<DropdownMenu.Item onSelect={() => setEditOpen(true)}>
+						Edit user
+					</DropdownMenu.Item>
 					<DropdownMenu.Item onSelect={() => setDeleteOpen(true)}>
 						Delete user
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
+			<EditUserDialog
+				user={user}
+				open={editOpen}
+				onOpenChange={setEditOpen}
+			/>
 			<DeleteUserDialog
 				user={user}
 				open={deleteOpen}
