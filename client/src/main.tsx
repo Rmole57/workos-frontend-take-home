@@ -20,7 +20,7 @@ createRoot(root).render(
 			<BrowserRouter>
 				<Theme accentColor="iris" radius="medium" appearance="inherit">
 					<App />
-					<Toaster richColors position="bottom-right" closeButton />
+					<Toaster richColors position="top-center" closeButton />
 					<ReactQueryDevtools
 						initialIsOpen={false}
 						buttonPosition="bottom-left"

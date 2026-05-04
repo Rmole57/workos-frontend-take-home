@@ -28,12 +28,13 @@ body {
 	cursor: pointer;
 }
 
-.rt-BaseButton.rt-variant-surface[data-accent-color="gray"] {
+.rt-BaseButton.rt-variant-surface[data-accent-color="gray"]:not(
+		[data-disabled]
+	) {
 	color: var(--gray-12);
-}
-
-.rt-BaseButton.rt-variant-surface[data-accent-color="gray"]:hover {
-	background-color: var(--gray-a2);
+	&:hover {
+		background-color: var(--gray-a2);
+	}
 }
 
 .rt-BaseButton.rt-variant-surface[data-accent-color="red"]:hover {
