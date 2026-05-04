@@ -1,14 +1,18 @@
-import { Box, Container, Heading, Text } from "@radix-ui/themes";
+import { Navigate, Route, Routes } from 'react-router'
 
-export const App = () => (
-	<Box minHeight="100vh" p="6">
-		<Container size="3">
-			<Heading size="6" mb="2">
-				Users &amp; Roles
-			</Heading>
-			<Text as="p" color="gray">
-				Placeholder
-			</Text>
-		</Container>
-	</Box>
-);
+import { AppShell } from './components/layout/AppShell'
+import { RolesPage } from './routes/RolesPage'
+import { UsersPage } from './routes/UsersPage'
+
+export function App() {
+  return (
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route index element={<Navigate to="/users" replace />} />
+        <Route path="users" element={<UsersPage />} />
+        <Route path="roles" element={<RolesPage />} />
+        <Route path="*" element={<Navigate to="/users" replace />} />
+      </Route>
+    </Routes>
+  )
+}
