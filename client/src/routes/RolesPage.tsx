@@ -1,9 +1,5 @@
-import { Text } from '@radix-ui/themes'
+import { RolesTable } from "../components/roles/RolesTable"
 
 export function RolesPage() {
-  return (
-    <Text as="p" color="gray">
-      Roles table coming soon.
-    </Text>
-  )
+	return <RolesTable />
 }

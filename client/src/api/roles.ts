@@ -3,11 +3,12 @@ import type { PagedData, Role } from "./types";
 
 export type ListRolesParams = {
 	page?: number;
+	search?: string;
 };
 
 export const listRoles = (params: ListRolesParams = {}, signal?: AbortSignal) =>
 	apiFetch<PagedData<Role>>("/roles", {
-		search: { page: params.page },
+		search: { page: params.page, search: params.search },
 		signal,
 	});
 
