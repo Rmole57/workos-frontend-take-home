@@ -29,19 +29,20 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
 		[rolesById],
 	);
 
-	const defaultRoleId = useMemo(() => {
-		if (!rolesById) return "";
-		for (const role of rolesById.values()) {
-			if (role.isDefault) {
-				return role.id;
-			}
-		}
-		return "";
-	}, [rolesById]);
+	const defaultRoleId = useMemo(
+		() => roles.find((role) => role.isDefault)?.id ?? "",
+		[roles],
+	);
 
 	const [first, setFirst] = useState("");
 	const [last, setLast] = useState("");
-	const [roleId, setRoleId] = useState(defaultRoleId);
+	// Controlled with fallback: an empty `roleId` means "user hasn't picked
+	// anything", so we render the current default in its place. Avoids the
+	// `useState(defaultRoleId)` trap where the initial value is captured
+	// before roles hydrate, and stays reactive if the default changes
+	// (e.g. someone promotes another role mid-dialog).
+	const [roleId, setRoleId] = useState("");
+	const effectiveRoleId = roleId || defaultRoleId;
 
 	const firstId = useId();
 	const lastId = useId();
@@ -49,7 +50,8 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
 
 	const trimmedFirst = first.trim();
 	const trimmedLast = last.trim();
-	const isValid = trimmedFirst !== "" && trimmedLast !== "" && roleId !== "";
+	const isValid =
+		trimmedFirst !== "" && trimmedLast !== "" && effectiveRoleId !== "";
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -57,7 +59,7 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
 		createMutation.mutate({
 			first: trimmedFirst,
 			last: trimmedLast,
-			roleId,
+			roleId: effectiveRoleId,
 		});
 		onOpenChange(false);
 	};
@@ -101,7 +103,10 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
 							<Text id={roleLabelId} as="div" size="2" weight="medium">
 								Role
 							</Text>
-							<Select.Root value={roleId} onValueChange={setRoleId}>
+							<Select.Root
+								value={effectiveRoleId}
+								onValueChange={setRoleId}
+							>
 								<Select.Trigger
 									aria-labelledby={roleLabelId}
 									placeholder="Select a role"
