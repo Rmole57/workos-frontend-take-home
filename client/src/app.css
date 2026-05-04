@@ -21,3 +21,18 @@ body {
 .data-table-footer {
 	--table-row-box-shadow: inset 0 1px var(--gray-a5);
 }
+
+.rt-BaseButton:not([data-disabled]),
+.rt-IconButton:not([data-disabled]) {
+	cursor: pointer;
+}
+
+.rt-BaseButton.rt-variant-surface {
+	color: var(--gray-12);
+}
+
+.rt-BaseButton[data-disabled] {
+	background-color: var(--gray-a3);
+	color: var(--gray-a8);
+	box-shadow: none;
+}
