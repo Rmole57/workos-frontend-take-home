@@ -26,3 +26,15 @@ export const updateUser = (id: string, patch: UpdateUserPatch) =>
 		method: "PATCH",
 		body: patch,
 	});
+
+export type CreateUserInput = {
+	first: string
+	last: string
+	roleId: string
+}
+
+export const createUser = (input: CreateUserInput) =>
+	apiFetch<User>("/users", {
+		method: "POST",
+		body: input,
+	});

@@ -11,6 +11,7 @@ import { formatJoined, initialsOf } from "../../lib/format";
 import { useDebouncedSearch } from "../../lib/useDebouncedSearch";
 import { DataTable } from "../data-table/DataTable";
 
+import { AddUserButton } from "./AddUserButton";
 import { UserRowActions } from "./UserRowActions";
 
 const parsePage = (raw: string | null) => {
@@ -78,31 +79,35 @@ export function UsersTable() {
 
 	return (
 		<Flex direction="column" gap="3">
-			<TextField.Root
-				size="2"
-				placeholder="Search users…"
-				aria-label="Search users"
-				value={search.value}
-				onChange={(event) => search.setValue(event.target.value)}
-				onKeyDown={search.handleKeyDown}
-			>
-				<TextField.Slot>
-					<MagnifyingGlassIcon aria-hidden />
-				</TextField.Slot>
-				{search.value !== "" && (
-					<TextField.Slot side="right">
-						<IconButton
-							size="1"
-							variant="ghost"
-							color="gray"
-							aria-label="Clear search"
-							onClick={search.clear}
-						>
-							<Cross1Icon />
-						</IconButton>
+			<Flex gap="2">
+				<TextField.Root
+					size="2"
+					style={{ flexGrow: 1 }}
+					placeholder="Search by name…"
+					aria-label="Search users"
+					value={search.value}
+					onChange={(event) => search.setValue(event.target.value)}
+					onKeyDown={search.handleKeyDown}
+				>
+					<TextField.Slot>
+						<MagnifyingGlassIcon aria-hidden />
 					</TextField.Slot>
-				)}
-			</TextField.Root>
+					{search.value !== "" && (
+						<TextField.Slot side="right">
+							<IconButton
+								size="1"
+								variant="ghost"
+								color="gray"
+								aria-label="Clear search"
+								onClick={search.clear}
+							>
+								<Cross1Icon />
+							</IconButton>
+						</TextField.Slot>
+					)}
+				</TextField.Root>
+				<AddUserButton />
+			</Flex>
 			<DataTable
 				query={usersQuery}
 				columns={columns}
