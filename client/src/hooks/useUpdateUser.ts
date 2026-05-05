@@ -13,15 +13,6 @@ type UpdateUserVariables = {
 
 const fullName = (user: User) => `${user.first} ${user.last}`;
 
-/**
- * Optimistically update a user.
- *
- * Same lifecycle shape as `useDeleteUserMutation` — the only difference is
- * the cache patch: we `map` instead of `filter`, replacing the matching
- * row with `{ ...user, ...patch }`. The row's new values appear instantly;
- * `onSettled` invalidates so the server's authoritative response (including
- * `updatedAt`) replaces our local guess.
- */
 export const useUpdateUserMutation = () => {
 	const queryClient = useQueryClient();
 
