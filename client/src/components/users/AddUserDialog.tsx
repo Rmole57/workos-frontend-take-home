@@ -36,11 +36,6 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
 
 	const [first, setFirst] = useState("");
 	const [last, setLast] = useState("");
-	// Controlled with fallback: an empty `roleId` means "user hasn't picked
-	// anything", so we render the current default in its place. Avoids the
-	// `useState(defaultRoleId)` trap where the initial value is captured
-	// before roles hydrate, and stays reactive if the default changes
-	// (e.g. someone promotes another role mid-dialog).
 	const [roleId, setRoleId] = useState("");
 	const effectiveRoleId = roleId || defaultRoleId;
 
@@ -103,10 +98,7 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
 							<Text id={roleLabelId} as="div" size="2" weight="medium">
 								Role
 							</Text>
-							<Select.Root
-								value={effectiveRoleId}
-								onValueChange={setRoleId}
-							>
+							<Select.Root value={effectiveRoleId} onValueChange={setRoleId}>
 								<Select.Trigger
 									aria-labelledby={roleLabelId}
 									placeholder="Select a role"

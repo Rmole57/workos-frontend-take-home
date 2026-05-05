@@ -1,7 +1,7 @@
 import { Cross1Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Avatar, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
 import type { Role, User } from "../../api/types";
@@ -44,6 +44,24 @@ export function UsersTable() {
 			return updated;
 		});
 	};
+
+	useEffect(() => {
+		if (usersQuery.data?.data.length === 0 && page > 1) {
+			setSearchParams(
+				(prev) => {
+					const updated = new URLSearchParams(prev);
+					const next = page - 1;
+					if (next <= 1) {
+						updated.delete("page");
+					} else {
+						updated.set("page", String(next));
+					}
+					return updated;
+				},
+				{ replace: true },
+			);
+		}
+	}, [usersQuery.data, page, setSearchParams]);
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const columns = useMemo<ColumnDef<User, any>[]>(
