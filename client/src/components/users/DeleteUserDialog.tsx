@@ -1,35 +1,30 @@
-import { AlertDialog, Button, Flex, Strong, Text } from "@radix-ui/themes"
+import { AlertDialog, Button, Flex, Strong, Text } from "@radix-ui/themes";
 
-import type { User } from "../../api/types"
-import { useDeleteUserMutation } from "../../hooks/useDeleteUser"
+import type { User } from "../../api/types";
+import { useDeleteUserMutation } from "../../hooks/useDeleteUser";
 
 type DeleteUserDialogProps = {
-	user: User
-	open: boolean
-	onOpenChange: (open: boolean) => void
-}
+	user: User;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+};
 
 export function DeleteUserDialog({
 	user,
 	open,
 	onOpenChange,
 }: DeleteUserDialogProps) {
-	const deleteMutation = useDeleteUserMutation()
+	const deleteMutation = useDeleteUserMutation();
 
 	const handleConfirm = () => {
-		// Wrap the cache mutation in a View Transition so the row's removal
-		// (and the next user filling the gap after refetch) cross-fades
-		// instead of popping. Falls back gracefully where the API isn't
-		// supported (Firefox stable today). The browser respects
-		// `prefers-reduced-motion: reduce` automatically.
-		const triggerDelete = () => deleteMutation.mutate(user)
+		const triggerDelete = () => deleteMutation.mutate(user);
 		if (typeof document.startViewTransition === "function") {
-			document.startViewTransition(triggerDelete)
+			document.startViewTransition(triggerDelete);
 		} else {
-			triggerDelete()
+			triggerDelete();
 		}
-		onOpenChange(false)
-	}
+		onOpenChange(false);
+	};
 
 	return (
 		<AlertDialog.Root open={open} onOpenChange={onOpenChange}>
@@ -51,16 +46,12 @@ export function DeleteUserDialog({
 						</Button>
 					</AlertDialog.Cancel>
 					<AlertDialog.Action>
-						<Button
-							variant="surface"
-							color="red"
-							onClick={handleConfirm}
-						>
+						<Button variant="surface" color="red" onClick={handleConfirm}>
 							Delete
 						</Button>
 					</AlertDialog.Action>
 				</Flex>
 			</AlertDialog.Content>
 		</AlertDialog.Root>
-	)
+	);
 }
