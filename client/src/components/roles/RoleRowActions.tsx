@@ -19,6 +19,7 @@ export function RoleRowActions({ role }: RoleRowActionsProps) {
 		<Flex justify="end" align="center" gap="2">
 			{role.isDefault && (
 				<Badge
+					className="role-default-badge"
 					color="iris"
 					variant="soft"
 					radius="full"

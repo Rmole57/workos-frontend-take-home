@@ -17,7 +17,17 @@ export function DeleteUserDialog({
 	const deleteMutation = useDeleteUserMutation()
 
 	const handleConfirm = () => {
-		deleteMutation.mutate(user)
+		// Wrap the cache mutation in a View Transition so the row's removal
+		// (and the next user filling the gap after refetch) cross-fades
+		// instead of popping. Falls back gracefully where the API isn't
+		// supported (Firefox stable today). The browser respects
+		// `prefers-reduced-motion: reduce` automatically.
+		const triggerDelete = () => deleteMutation.mutate(user)
+		if (typeof document.startViewTransition === "function") {
+			document.startViewTransition(triggerDelete)
+		} else {
+			triggerDelete()
+		}
 		onOpenChange(false)
 	}
 
