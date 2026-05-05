@@ -1,92 +1,103 @@
-# Frontend Take-Home Assignment
+# WorkOS Frontend Take-Home — Users & Roles
 
-Welcome to the WorkOS Frontend Take-Home Assignment!
+A small dashboard for managing users and roles, built against the take-home Express API in [`server/`](./server).
 
-In this exercise, you'll implement the UI for a simple two-tab layout that lists users and roles. You will also add limited functionality to update users and roles.
+## Tech stack
 
-You should have received an invitation to view a Figma design file for the take-home assignment. If you haven't received and invitation email, please reach out to us.
+- **Vite + React 19 + TypeScript** — single-page app, no SSR needed.
+- **Radix Themes** — UI library; matches the components linked from the Figma file (Tabs, Button, TextField, AlertDialog, …) and ships full keyboard / ARIA support.
+- **TanStack Query + Table** — server state (caching, retries against the API's intentional 5% random 500s) and a headless row/header model so column definitions live as data and stay open to sortable / hide-able / selectable extensions.
+- **React Router** — `/users` and `/roles` are real routes so tabs deep-link and the back button works; search and page also live in the URL.
+- **Sonner** — minimal toasts for mutation feedback.
 
-To get you started, we've also provided a fully functional backend API. Keep in mind, you won’t need to implement all of the functionality implied by the design or backend API. Make sure to focus on the specific tasks outlined below.
+## Notable decisions
 
-Feel free to use any frontend framework and libraries you prefer — there’s no need to build everything from scratch. At WorkOS, we use [Radix Themes](https://www.radix-ui.com/), and it's perfectly fine if you want to leverage similar libraries. Just be ready to explain your decisions, including why you chose certain libraries and how they benefit the project.
+### TanStack Query for server state
 
-If you have any questions, feel free to reach out — we're happy to clarify anything.
+What it gets us today:
 
-## Time Consideration
+- **Retry against the API's intentional 5% 500s** (`retry: 2` with backoff).
+- **`placeholderData: keepPreviousData`** for paginated views — the previous page stays painted while the next one fetches, so page transitions don't blink to a skeleton.
+- **Optimistic mutations with rollback** for delete user, edit user, edit role, and set-default. The UI reflects the change immediately; on failure the snapshot restores and a toast explains why.
+- **Hierarchical query-key factories** (`userKeys.all`, `roleKeys.paged({ page, search })`). A single `invalidateQueries({ queryKey: roleKeys.all })` cascades to every cached page/search variant — no bookkeeping of which pages are live.
 
-We value your time! If this assignment takes you more than 8 hours, please submit whatever you have at that point.
+### TanStack Table for the table model
 
-Focus on quality. You should be proud of your submission. While the code doesn't need to be 100% production-ready, it should be polished enough for a demo.
+I picked the headless TanStack model on top of Radix Themes' table primitives because, in my opinion, sorting and filtering aren't really "nice-to-haves" on a list view; they're inevitably the next thing you'll be asked for. Without a structured column model, that future ask means rewriting the table. With it, it's plumbing UI into APIs that already exist (`getSortedRowModel`, `getFilteredRowModel`, column visibility, row selection).
 
-Be sure to include a README that outlines what you'd improve or do differently if you had more time.
+What it gets us today:
 
-## Getting Started
+- **Column definitions live as data** (`ColumnDef<T>[]`). Header, cell renderer, accessor, and meta props (e.g. the `aria-label` on the actions column) are co-located, so a column reads as one unit.
+- **One `DataTable` for users *and* roles.** The shell is generic over `T`; only the `columns` array differs per page. Adding a column is appending an entry; removing is deleting one.
+- **Module-augmented `ColumnMeta`** lets us pass Radix-shaped props (cell width, alignment, etc.) through column config without one-off branches in the renderer.
 
-1. **Fork the Repo**: Start by forking this repository so that you have your own version to work with.
-2. **Start the Backend API**:
-   - Ensure you have the latest version of Node.js.
-   - Run the following commands to install dependencies and start the API:
-     ```bash
-     cd server
-     npm install
-     npm run api
-     ```
-3. **Project Setup**: Add your project under the `client` directory.
+## Prerequisites
 
-## Design Reference
+- Node 20+ (Vite 8 requires it; `nvm use --lts` if you have nvm)
+- npm 10+
 
-Be sure to consult the Figma design file that you were invited to view. You'll need to sign-in to Figma to access the design, so you may need to create a Figma account.
+## Run it
 
-The design is a starting point — you'll need to fill in some details (e.g., loading states, error states, hover states). The "Roles" tab is not designed, so you'll infer the design based on what is provided for the "Users" tab.
+The backend and frontend run as separate processes. Open two terminals.
 
-For those portions of the exercise in which the design is given, your implementation should match the design as closely as possible. Attention to detail is important. It is certainly acceptable to deviate from the design if you are confident it is an improvement, but please explain your thinking in your README.
+**Terminal 1 — API (`http://localhost:3002`)**
 
-## Backend API
+```bash
+cd server
+npm install
+npm run api
+```
 
-The API provides full CRUD support for users and roles, but you won’t need to use every endpoint.
+The API simulates 500ms–2s latency and a 5% chance of returning a `500`. To turn either off:
 
-**Do not alter the backend API**.
+```bash
+SERVER_SPEED=instant npm run api   # no latency
+```
 
-The API includes intentional latency and random server errors to simulate real-world scenarios. Ensure your front-end handles these gracefully.
+**Terminal 2 — Web client (`http://localhost:4173`)**
 
-You can adjust the API speed using the `SERVER_SPEED` environment variable:
+```bash
+cd client
+npm install
+npm run start
+```
 
-- **slow**: Simulate slower network (`SERVER_SPEED=slow npm run api`)
-- **instant**: Remove latency (`SERVER_SPEED=instant npm run api`)
+## Useful scripts (in `client/`)
 
-You can run backend tests by executing `npm run test` in the `server` directory. The test code is located at `server/src/api.test.ts`.
+| Command            | What it does                                  |
+| ------------------ | --------------------------------------------- |
+| `npm run dev`      | Vite dev server with HMR                      |
+| `npm run build`    | Type-check (`tsc -b`) and produce a prod bundle |
+| `npm run preview`  | Serve the prod build locally                  |
+| `npm run lint`     | ESLint over `src/`                            |
+| `npm run start`   | Build, type-check, and serve the production bundle on `:4173` |
 
-## Tasks Overview
+## Project layout
 
-Work on the following tasks in this order. If you can’t complete all tasks, focus on quality rather than quantity.
+```
+.
+├── client/                # Vite + React UI (this is where the take-home work lives)
+└── server/                # provided Express API — do not modify
+```
 
-1. Setup the "Users" and "Roles" tab structure
-2. Add the users table
-3. Add support for filtering the users table via the "Search" input field
-4. Add support for deleting a user via the "more" icon button dropdown menu
-5. Add support for viewing all roles in the "Roles" tab
-6. Add support for renaming a role in the "Roles" tab
-7. [Bonus] Add pagination to the user table
+## What I'd improve with more time
 
-## Evaluation Criteria
+- **Roles parity with Users (create + delete).** Roles currently supports edit and set-default; users have full CRUD. Adding `<AddRoleDialog>` and `<DeleteRoleDialog>` would round it out using the same hooks/optimistic patterns the user CRUD already uses. One thing to note for role deletion is the backend reassigns the role's users to the new default server-side — that needs a confirm dialog that calls it out so the user isn't surprised.
 
-We’ll evaluate based on the following:
+- **Sortable headers + filter chips on the users table (especially "filter by role").** Worth flagging why I held off rather than just shipping client-side sort: the API doesn't expose `?sort=...` or `?filter=...`, and a client-only implementation has two unappealing options:
 
-- **User Experience (UX)**: Clean and intuitive interface.
-- **Component Composition**: Modular and reusable components.
-- **State Management & Caching**: Efficient handling of data.
-- **Error & Loading States**: Graceful handling of API delays and errors.
-- **CSS Animations**: Best practices followed for smooth UI interactions.
-- **Code Quality**: Clean, well-structured, and maintainable code.
-- **Accessibility**: Keyboard navigation and accessibility considerations.
+  - **Sort/filter the current page only** — gives a misleading "alphabetical" order that's actually "alphabetical *within this page*". A user looking for someone alphabetically lands on page 1 and is confused when the name turns out to be on page 4.
+  - **Fetch all records and paginate client-side** — works correctly but throws away the point of server pagination and degrades as the dataset grows.
 
-## Submission Guidelines
+  The right move is to wait until the API takes those params and then enable the column features TanStack Table is already pre-positioned for (`getSortedRowModel`, `manualSorting: true`, etc.). The column-config refactor was done with this in mind.
 
-**Please do not submit a pull request to the WorkOS repo.**
+- **Stable row count during delete refetch.** When you delete a user, the optimistic update removes the row, the table shrinks by one row's height, the refetch returns the next user to fill the gap, and the table grows back. It's a small but visible blip. Two reasonable fixes:
 
-In your forked repository, include a README that explains:
+  - **Reserve vertical space during the delete refetch.** Render empty "spacer rows" so total tbody height is constant: when the rendered row count drops below `pageSize`, fill the remainder with `aria-hidden` empty rows.
+  - **Don't remove optimistically.** Render the row in a "removing" state (dimmed, dropdown disabled) and let the refetch produce the final layout. Cheaper, slightly less optimistic-feeling.
 
-- How to run your project.
-- What you would improve or do differently if you had more time.
+- **Generate a full custom 12-step accent palette** from `#6565EC` instead of overriding only `--accent-9` on top of the iris scale. Currently hover/pressed states pull from iris; with a generated scale the entire interaction model would be on-brand. Radix has a [generator](https://www.radix-ui.com/colors/custom) that outputs the right values.
 
-Once you're ready, share the URL to your GitHub repository with us. Make sure your code runs locally based on the instructions in your README.
+- **Custom page sizes.** Introduce page number count and custom page size selection in pagination table footer. At that point it would be worth extracting to a Pagination component.
+
+- **Tests.** Component tests for the dialogs (delete confirmation, edit dialogs) and integration tests for the optimistic mutations + rollback paths via Vitest + Testing Library.
